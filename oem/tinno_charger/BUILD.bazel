@@ -1,0 +1,55 @@
+load("//build/bazel_mgk_rules:mgk_ddk_ko.bzl", "define_mgk_ddk_ko")
+load("@mgk_info//:kernel_version.bzl", "kernel_version",)
+
+package(
+    default_visibility = [
+        "//visibility:public",
+    ],
+)
+
+# Only configs/sources for chips enabled in mgk_64_k612_defconfig:
+# OEM_TINNO_CHARGER, SC8960X, CX2560X, UPM7610, AW35615
+filegroup(
+    name = "ddk_kconfigs",
+    srcs = [
+        "Kconfig",
+    ],
+)
+
+filegroup(
+    name = "ddk_src",
+    srcs = [
+        "Makefile",
+        "Kconfig",
+        "tinno_charger.c",
+        "tinno_charger.h",
+        "switch_charger/Kbuild",
+        "typec/Kbuild",
+    ] + glob([
+        "switch_charger/sc8960x/**",
+        "switch_charger/cx2560x/**",
+        "typec/upm7610/**",
+        "typec/aw35615/**",
+    ]),
+)
+
+define_mgk_ddk_ko(
+    name = "oem_tinno_charger",
+    srcs = [
+        "tinno_charger.c",
+    ],
+    hdrs = glob([
+        "tinno_charger.h",
+    ]),
+    ko_deps = [
+        "//kernel_device_modules-{}/drivers/power/supply:charger_class".format(kernel_version),
+    ],
+    includes = ["."],
+    copts = [
+        "-I$(DEVICE_MODULES_PATH)/drivers/power/supply/",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/typec/tcpc/inc",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/typec/tcpc/",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/usb/usb20/",
+    ],
+)

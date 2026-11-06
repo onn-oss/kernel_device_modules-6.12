@@ -1,0 +1,46 @@
+config OEM_TINNO_CHARGER
+	tristate "oem tinno charger"
+	default n
+	help
+	  support oem_tinno_charger
+
+config OEM_SWITCH_CHARGER
+	tristate "oem third party switch charger support"
+	depends on OEM_TINNO_CHARGER
+	default n
+	help
+	  support oem_switch_charger
+
+config OEM_SWITCH_CHARGER_SC8960X
+	tristate "oem switch charger sc8960x"
+	depends on OEM_SWITCH_CHARGER
+	default n
+	help
+	  support oem_switch_charger_sc8960x
+
+config OEM_SWITCH_CHARGER_CX2560X
+	tristate "oem switch charger cx2560x"
+	depends on OEM_SWITCH_CHARGER
+	default n
+	help
+	  support oem_switch_charger_cx2560x
+
+config OEM_TCPC
+	tristate "oem third party cc logic support"
+	default n
+	help
+	  support oem_tcpc
+
+config OEM_TCPC_PD_UPM7610
+	tristate "oem tcpc pd upm7610"
+	depends on OEM_TCPC
+	default n
+	help
+	  support oem_tcpc_pd_upm7610
+
+config OEM_TCPC_PD_AW35615
+	tristate "oem tcpc pd aw35615"
+	depends on OEM_TCPC
+	default n
+	help
+	  support oem_tcpc_pd_aw35615

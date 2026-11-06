@@ -1,0 +1,58 @@
+config MTK_VIDEO_LM3643
+	tristate "LM3643 dual flash driver support"
+	depends on I2C && VIDEO_DEV && MEDIA_CONTROLLER
+	depends on MEDIA_CAMERA_SUPPORT
+	select REGMAP_I2C
+	help
+	  This is a driver for the lm3643 dual flash controllers. It controls
+	  flash, torch LEDs.
+
+	  Say Y here if you want a flashlight driver IC LM3643.
+	  Select this only if your board has this IC.
+	  Say M here if you want to compile this driver as a module.
+
+config MTK_VIDEO_LM3644
+	tristate "LM3644 dual flash driver support"
+	depends on I2C && VIDEO_DEV && MEDIA_CONTROLLER
+	depends on MEDIA_CAMERA_SUPPORT
+	select REGMAP_I2C
+	help
+	  This is a driver for the lm3644 dual flash controllers. It controls
+	  flash, torch LEDs.
+
+	  Say Y here if you want a flashlight driver IC LM3644.
+	  Select this only if your board has this IC.
+	  Say M here if you want to compile this driver as a module.
+
+config MTK_VIDEO_SY7806
+	tristate "SY7806 dual flash driver support"
+	depends on I2C && VIDEO_DEV && MEDIA_CONTROLLER
+	depends on MEDIA_CAMERA_SUPPORT
+	select REGMAP_I2C
+	help
+	  This is a driver for the sy7806 dual flash controllers. It controls
+	  flash, torch LEDs.
+
+	  Say Y here if you want a flashlight driver IC SY7806.
+	  Select this only if your board has this IC.
+	  Say M here if you want to compile this driver as a module.
+
+config MTK_FLASHLIGHT_OCP81378
+	tristate "Mediatek flashlight with driver IC (OCS OCP81378)"
+	depends on MTK_FLASHLIGHT
+	help
+	  This is for the flashlight driver IC (OCS OCP81378).
+
+	  Say Y here if you want a flashlight driver IC OCP81378.
+	  Select this only if your board has this IC.
+
+	  Say M here if you want to compile this driver as a module.
+
+config FLASHLIGHT_DEBUG
+	bool "debug version build variant for flashlight driver"
+	default n
+	  help
+	  This is used for flashlight driver to distinguishing user load and
+	  eng/userdebug load.
+	  Say Y if this is eng/userdebug load.
+	  If not, say N.

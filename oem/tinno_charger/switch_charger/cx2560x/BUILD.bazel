@@ -1,0 +1,52 @@
+load("//build/bazel_mgk_rules:mgk_ddk_ko.bzl", "define_mgk_ddk_ko")
+load("@mgk_info//:kernel_version.bzl", "kernel_version",)
+
+package(
+    default_visibility = [
+        "//visibility:public",
+    ],
+)
+
+filegroup(
+    name = "ddk_kconfigs",
+    srcs = glob([
+        "**/Kconfig",
+    ]),
+)
+
+filegroup(
+    name = "ddk_src",
+    srcs = glob([
+        "**/Makefile",
+        "**/Kbuild",
+        "**/*.c",
+        "**/*.h",
+        "*.h",
+    ]),
+)
+
+define_mgk_ddk_ko(
+    name = "cx2560x",
+    srcs = [
+        "cx2560x_charger.c",
+    ],
+    hdrs = glob([
+        "cx2560x.h",
+        "cx2560x_reg.h",
+    ]),
+    ko_deps = [
+        "//kernel_device_modules-{}/drivers/power/supply:charger_class".format(kernel_version),
+        "//kernel_device_modules-{}/drivers/power/supply:mtk_charger_framework".format(kernel_version),
+        "//kernel_device_modules-{}/drivers/power/supply:adapter_class".format(kernel_version),
+        "//kernel_device_modules-{}/drivers/misc/mediatek/usb/usb20:musb_hdrc".format(kernel_version),
+    ],
+    includes = ["."],
+    copts = [
+        "-I$(DEVICE_MODULES_PATH)/drivers/power/supply/",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/typec/tcpc/inc",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/typec/tcpc/",
+        "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/usb/usb20/",
+    ],
+)
+

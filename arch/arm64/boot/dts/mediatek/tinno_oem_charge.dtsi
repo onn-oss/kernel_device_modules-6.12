@@ -1,0 +1,309 @@
+#include <dt-bindings/iio/mt635x-auxadc.h>
+&i2c0 {
+	clock-frequency = <400000>;
+
+	upm7610_typec: upm7610@60 {
+		compatible = "unisemipower,upm7610";
+		reg = <0x60>;
+		status = "okay";
+		up-tcpc,name = "type_c_port0"; /* tcpc_device's name */
+		up-tcpc,role-def = <5>; /* 0: Unknown, 1: SNK, 2: SRC */
+					/* 3: DRP, 4: Try.SRC, 5: Try.SNK */
+		up-tcpc,rp-level = <0>; /* 0: Default, 1: 1.5, 2: 3.0 */
+		up-tcpc,vconn-supply = <1>;  /* 0: Never, 1: Always, */
+					     /* 2: EMarkOnly, 3: StartOnly */
+		up-tcpc,disable_pe = <1>;
+		upm7610pd,intr-gpio = <&pio 3 0x0>;
+		upm7610pd,intr-gpio-num = <3>;
+		/* charger = <&mt6375_chg>; */
+		pd-data {
+			pd,vid = <0x362f>;
+			pd,pid = <0x7610>;
+			pd,source-cap-ext = /bits/ 8 <0xcf 0x29 0x11 0x17
+						      0x00 0x00 0x00 0x00
+						      0x00 0x00 0x00 0x00
+						      0x00 0x00 0x00 0x00
+						      0x00 0x00 0x00 0x00
+						      0x00 0x00 0x01 0x02
+						      0x00>;
+			pd,sink-cap-ext = /bits/ 8 <0xcf 0x29 0x11 0x17
+						    0x00 0x00 0x00 0x00
+						    0x00 0x00 0x01 0x00
+						    0x00 0x00 0x00 0x00
+						    0x01 0x0b 0x01 0x0a
+						    0x0a 0x00 0x00 0x00>;
+			pd,mfrs = "UnisemipowerTCPC";
+
+			/*
+			 *	VSAFE5V = 0, MAX_POWER = 1, CUSTOM = 2,
+			 *	MAX_POWER_LV = 0x21, MAX_POWER_LVIC = 0x31
+			 *	MAX_POWER_HV = 0x41, MAX_POWER_HVIC = 0x51
+			 */
+			pd,charging-policy = <0x31>;
+
+			/*
+			 * Fixed 5V, 500 mA <0x00019032>
+			 * Fixed 5V, 1A <0x00019064>
+			 * Fixed 5V, 2A <0x000190c8>
+			 * Fixed 5V, 3A <0x0001912c>
+			 * Fixed 9V, 500 mA <0x0002d032>
+			 * Fixed 9V, 1A <0x0002d064>
+			 * Fixed 9V, 2A <0x0002d0c8>
+			 * Fixed 9V, 3A <0x0002d12c>
+			 * Variable 5-9V, 1A <0x8642d064>
+			 * Variable 5-9V, 2A <0x8642d0c8>
+			 * Variable 5-9V, 3A <0x8642d12c>
+			 */
+			pd,source-pdo-size = <1>;
+			pd,source-pdo-data = <0x00019032>;
+			pd,sink-pdo-size = <1>;
+			pd,sink-pdo-data = <0x000190c8>;
+
+			/*
+			 * No DP, host + device
+			 *	pd,id-vdo-size = <6>;
+			 *	pd,id-vdo-data = <0xd14029cf 0x0 0x17110000
+						  0x61000000 0x0 0x41000000>;
+			 * With DP Sink capability
+			 *	pd,id-vdo-size = <6>;
+			 *	pd,id-vdo-data = <0xd54029cf 0x0 0x17110000
+						  0x61000000 0x0 0x41000000>;
+			 */
+
+			pd,id-vdo-size = <6>;
+			pd,id-vdo-data = <0xd140362f 0x0 0x76100000
+					  0x61000000 0x0 0x41000000>;
+
+			bat,nr = <1>;
+			pd,country-nr = <0>;
+
+			bat-info0 {
+				bat,vid = <0x362f>;
+				bat,pid = <0x7610>;
+				bat,mfrs = "bat1";
+				bat,design-cap = <3000>;
+			};
+		};
+		dpm-caps {
+			local-dr-power;
+			local-dr-data;
+			// local-ext-power;
+			local-usb-comm;
+			// local-usb-suspend;
+			// local-high-cap;
+			// local-give-back;
+			local-no-suspend;
+
+			/* With DP Source capability */
+			// attempt-enter-dp-mode;
+			// attempt-discover-cable;
+			// attempt-discover-id;
+			// attempt-discover-svids;
+
+			/* 0: disable, 1: prefer-snk, 2: prefer-src */
+			pr-check = <0>;
+			// pr-reject-as-source;
+			// pr-reject-as-sink;
+			// pr-check-gp-source;
+			// pr-check-gp-sink;
+
+			/* 0: disable, 1: prefer-ufp, 2: prefer-dfp */
+			dr-check = <0>;
+			// dr-reject-as-dfp;
+			// dr-reject-as-ufp;
+		};
+		displayport {
+			/* connection type = "both", "ufp-d", "dfp-d" */
+			1st-connection = "dfp-d";
+			2nd-connection = "dfp-d";
+			// usbr20-not-used;
+			typec,receptacle;
+			ufp-d {
+				// pin-assignment,mode-c;
+				// pin-assignment,mode-d;
+				// pin-assignment,mode-e;
+			};
+			dfp-d {
+				pin-assignment,mode-c;
+				pin-assignment,mode-d;
+				pin-assignment,mode-e;
+			};
+		};
+	};
+
+	aw35615@24 {
+		compatible = "awinic,aw35615";
+		reg = <0x24>;
+		awinic,int_n = <&pio 3 0>;
+		aw35615,port_id = <0>;
+		aw35615,snk_pdo_size = <1>; /* set sink pdo num*/
+		aw35615,snk_pdo_vol = <5000>; /* set sink pdo voltage mV*/
+		aw35615,snk_pdo_cur = <2000>; /* set sink pdo current mA*/
+		aw35615,snk_pps_size = <0>; /* set sink pps num*/
+		aw35615,snk_pps_vol = <0>; /* set sink pps voltage mV*/
+		aw35615,snk_pps_cur = <0>; /* set sink pps current mA*/
+		aw35615,src_pdo_size = <1>; /* set source pdo num*/
+		aw35615,src_pdo_vol = <5000>; /* set source pdo voltage mV*/
+		aw35615,src_pdo_cur = <1000>; /* set source pdo current mA*/
+		aw35615,src_pps_size = <0>; /* set sink pps num*/
+		aw35615,src_pps_vol = <0>; /* set sink pps voltage mV*/
+		aw35615,src_pps_cur = <0>; /* set sink pps current mA*/
+		aw35615,snk_tog_time = <0x36>; /* set toggle sink time */
+		aw35615,src_tog_time = <0x36>; /* set toggle source time */
+		aw35615,cc1_ov_th = <0x1>; /* set cc1 ov threshold */
+		aw35615,cc2_ov_th = <0x1>; /* set cc2 ov threshold */
+		aw35615,lpd_tim_set = <0xf>; /* set the LPD sensitivity */
+		aw35615,usb_pd_enable = <0>;  /* 1:enable, 0:disable */
+		status = "okay";
+	};
+};
+
+&i2c5 {
+	switch_charger: charger@6B {
+		compatible = "sc,sc89601d", "cx,cx2560x_charger";
+		reg = <0x6B>;
+		status = "okay";
+
+		/* sc8960x params */
+		sc8960x,intr-gpio = <&pio 4 IRQ_TYPE_EDGE_FALLING>;
+		sc8960x,charger_name = "primary_chg";
+		sc8960x,pfm-dis = <0>;           /*0: enable, 1: disable*/
+		sc8960x,vsys-min = <5>;          /*0: 2.6V, 1: 2.8V, 2: 3.0V, 3: 3.2V, 4: 3.4V,
+						   5: 3.5V, 6: 3.6V, 7: 3.7V*/
+		sc8960x,vbat-low-otg = <0>;      /*0: 2.8V, 1: 2.5V*/
+		sc8960x,ipre-chg = <11>;          /*60 + val * 60, unit:mA*/
+		sc8960x,itermination = <2>;      /*60 + val * 60, unit:mA*/
+		sc8960x,vbat-volt = <69>;        /*3848 + val * 8, unit:mV*/
+		sc8960x,top-off-timer = <0>;     /*0: dis, 1: 15min, 2: 20min 3: 45min*/
+		sc8960x,vrechg-volt = <0>;       /*0: 100mV, 1: 200mV*/
+		sc8960x,en-termination = <1>;    /*0: disable, 1: enable*/
+		sc8960x,wdt-timer = <0>;         /*0: disable, 1: 40s, 2: 80s, 3: 160s*/
+		sc8960x,en-chg-saft-timer = <0>; /*0: disable, 1: enable*/
+		sc8960x,charge-timer = <1>;      /*0: 5hrs, 1: 10hrs*/
+		sc8960x,vac-ovp = <1>;           /*0: 5.8V, 1: 6.4V, 2: 11V, 3: 14.2V*/
+		sc8960x,iboost = <1>;            /*0: 0.5A, 1: 1.2A*/
+		sc8960x,vboost = <12>;           /*3900 + val * 100, unit:mV*/
+		sc8960x,vindpm-track = <0>;      /*0: disable, 1:200mV, 2:250mV, 3:300mV*/
+		sc8960x,vindpm-int-mask = <1>;   /*0: not mask, 1: mask*/
+		sc8960x,iindpm-int-mask = <1>;   /*0: not mask, 1: mask*/
+		sc8960x,vpre-to-cc = <0>;        /*0: 3V, 1: 2.8V*/
+		sc8960x,auto-dpdm-en = <0>;      /*0: disable, 1: enable*/
+		sc8960x,ntc-pin-dis = <1>;       /*0: enable, 1: disable*/
+		sc8960x,support-otgcc-2A = <1>;  /*0: disable, 1: enable*/
+		sc8960x,en-hvdcp = <0>;          /*0: disable, 1: enable*/
+
+		/* cx2560x params */
+		cx,intr_gpio = <&pio 4 0x0>; /* GPIO */
+		cx,chg-en-gpio = <&pio 152 0x0>;
+		cx,iprechg = <676>;        /*Offset: 52mA, Default: 156mA, Max: 676mA*/
+		cx,iterm = <240>;    /*Offset: 60mA, Default: 180mA, Max: 786mA*/
+		cx,vrechg-volt = <100>;     /*0: 100mV, 1: 200mV*/
+		cx,en-chg-saft-timer = <0>; /*0: disable, 1: enable*/
+		chg_name = "primary_chg";
+
+		/* pmic vbus */
+		io-channels = <&pmic_auxadc AUXADC_VCDT>;
+		io-channel-names = "pmic_vbus";
+	};
+
+};
+
+&lk_charger {
+	compatible = "mediatek,lk_charger";
+	enable-anime;
+	/* enable-pe-plus; */
+	enable-pd20-reset;
+	power-path-support;
+	max-charger-voltage = <6500000>;
+	fast-charge-voltage = <3000000>;
+
+	/* charging current */
+	usb-charger-current = <500000>;
+	ac-charger-current = <1500000>;
+	ac-charger-input-current = <3200000>;
+	non-std-ac-charger-current = <500000>;
+	charging-host-charger-current = <1500000>;
+	ta-ac-charger-current = <3000000>;
+	pd-charger-current = <500000>;
+
+	/* battery temperature protection */
+	temp-t4-threshold = <55>;
+	temp-t3-threshold = <45>;
+	temp-t1-threshold = <0>;
+
+	/* enable check vsys voltage */
+	enable-check-vsys;
+};
+
+&charger {
+	algorithm-name = "Basic";
+	charger-configuration= <0>;
+
+	/* common */
+	battery-cv = <4400000>;
+	max-charger-voltage = <6500000>;
+	min-charger-voltage = <4600000>;
+
+	/* sw jeita */
+	/* enable-vbat-mon = <1>; */
+	enable-sw-jeita;
+	jeita-temp-above-t4-cv = <4100000>;
+	jeita-temp-t3-to-t4-cv = <4100000>;
+	jeita-temp-t2-to-t3-cv = <4400000>;
+	jeita-temp-t1-to-t2-cv = <4400000>;
+	jeita-temp-t0-to-t1-cv = <4400000>;
+	jeita-temp-below-t0-cv = <4400000>;
+
+	jeita-temp-above-t4-cc = <0>;
+	jeita-temp-t3-to-t4-cc = <2000000>;
+	jeita-temp-t2-to-t3-cc = <2000000>;
+	jeita-temp-t1-to-t2-cc = <1500000>;
+	jeita-temp-t0-to-t1-cc = <0>;
+	jeita-temp-below-t0-cc = <0>;
+
+	temp-t4-thres = <55>;
+	temp-t4-thres-minus-x-degree = <53>;
+	temp-t3-thres = <45>;
+	temp-t3-thres-minus-x-degree = <43>;
+	temp-t2-thres = <15>;
+	temp-t2-thres-plus-x-degree = <17>;
+	temp-t1-thres = <0>;
+	temp-t1-thres-plus-x-degree = <2>;
+	temp-t0-thres = <0>;
+	temp-t0-thres-plus-x-degree = <2>;
+	temp-neg-10-thres = <0>;
+
+	/* battery temperature protection */
+	enable-min-charge-temp;
+	min-charge-temp = <0>;
+	min-charge-temp-plus-x-degree = <2>;
+	max-charge-temp = <55>;
+	max-charge-temp-minus-x-degree = <53>;
+
+	/* charging current */
+	usb-charger-current = <500000>;
+	ac-charger-current = <2000000>;
+	ac-charger-input-current = <2300000>;
+	charging-host-charger-current = <1500000>;
+
+	/* dynamic mivr */
+	enable-dynamic-mivr;
+	min-charger-voltage-1 = <4400000>;
+	min-charger-voltage-2 = <4200000>;
+	max-dmivr-charger-current = <1800000>;
+
+	/* fast charging algo support indicator */
+	enable-fast-charging-indicator;
+};
+
+&u2port0 {
+	mediatek,eye-vrt = <6>;  //Device
+	mediatek,eye-term = <6>;
+	mediatek,rev6 = <3>;
+
+	mediatek,eye-vrt-host = <3>;  //Host
+	mediatek,eye-term-host = <3>;
+	mediatek,rev6-host = <3>;
+};
+
+#include "mediatek/bat_setting/T405A/mt6789_battery_prop.dtsi"

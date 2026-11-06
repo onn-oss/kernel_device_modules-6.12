@@ -1,0 +1,40 @@
+TINNO tp share folder for focaltech
+======================================
+
+<<<<<<Driver Version>>>>>>
+
+FTS_DRIVER_VERSION  "FocalTech V4.2 20240407"
+
+<<<<<<Suggest Dtsi>>>>>>
+
+&spi2 {
+    status = "ok";
+    touch@0 {
+        compatible = "focaltech,fts";
+        reg = <0>;
+        interrupt-parent = <&pio>;
+        interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
+        spi-max-frequency = <6000000>;
+        focaltech,reset-gpio = <&pio 157 0x0>;
+        focaltech,irq-gpio = <&pio 9 0x0>;
+        focaltech,max-touch-number = <10>;
+        focaltech,display-coords =  <0 0 1280 1840>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&spi2_pins_a>;
+    };
+};
+&pio{
+	spi2_pins_a: spi2 {
+		pins_spi2 {
+			pinmux = <PINMUX_GPIO38__FUNC_SPI2_CLK>,
+				<PINMUX_GPIO39__FUNC_SPI2_CSB>,
+				<PINMUX_GPIO40__FUNC_SPI2_MO>,
+				<PINMUX_GPIO41__FUNC_SPI2_MI>;
+			drive-strength = <2>;
+		};
+
+	};
+};
+
+
+

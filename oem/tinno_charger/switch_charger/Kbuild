@@ -1,0 +1,7 @@
+ifdef CONFIG_OEM_SWITCH_CHARGER_SC8960X
+	obj-y += sc8960x/
+endif
+
+ifdef CONFIG_OEM_SWITCH_CHARGER_CX2560X
+	obj-y += cx2560x/
+endif

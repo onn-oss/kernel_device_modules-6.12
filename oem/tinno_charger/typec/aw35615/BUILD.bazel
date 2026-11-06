@@ -1,0 +1,91 @@
+load("//build/bazel_mgk_rules:mgk_ddk_ko.bzl", "define_mgk_ddk_ko")
+load("@mgk_info//:kernel_version.bzl", "kernel_version",)
+load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
+
+package(
+    default_visibility = [
+        "//visibility:public",
+    ],
+)
+
+filegroup(
+    name = "ddk_kconfigs",
+    srcs = glob([
+        "**/Kconfig",
+    ]),
+)
+
+filegroup(
+    name = "ddk_src",
+    srcs = glob([
+        "**/Makefile",
+        "**/Kbuild",
+        "**/*.c",
+        "**/*.h",
+        "*.h",
+    ]),
+)
+
+ddk_headers(
+    name = "aw35615_public_headers",
+    hdrs = glob([
+        "*.h",
+        "mod/*.h",
+        "vdm/**/*.h",
+    ]),
+    includes = ["."],
+)
+
+define_mgk_ddk_ko(
+    name = "aw35615",
+    srcs = [
+        "aw35615_driver.c",
+        "aw35615_global.c",
+        "platform_helpers.c",
+        "dfs.c",
+        "core.c",
+        "PDPolicy.c",
+        "timer.c",
+        "PDProtocol.c",
+        "TypeC.c",
+        "Port.c",
+        "vendor_info.c",
+        "mod/dpm.c",
+        "mod/observer.c",
+        "vdm/bitfield_translators.c",
+        "vdm/vdm.c",
+        "vdm/vdm_callbacks.c",
+        "vdm/DisplayPort/dp.c",
+    ],
+    hdrs = glob([
+        "*.h",
+        "mod/*.h",
+        "vdm/**/*.h",
+    ]),
+    ko_deps = [
+        "//kernel_device_modules-{}/drivers/misc/mediatek/typec/tcpc:tcpc_class".format(kernel_version),
+        "//kernel_device_modules-{}/drivers/misc/mediatek/typec/tcpc:pd_dbg_info".format(kernel_version),
+        "//kernel_device_modules-{}/drivers/power/supply:charger_class".format(kernel_version),
+    ],
+    includes = ["."],
+    copts = [
+        "-Wall",
+        "-Werror",
+        "-Wno-unused-but-set-variable",
+        "-DCONFIG_RT_REGMAP",
+        "-I$(DEVICE_MODULES_PATH)/drivers/power/supply/",
+        "-I$(DEVICE_MODULES_PATH)/drivers/mfd/",
+    ],
+    local_defines=[
+        "AW_HAVE_SNK",
+        "AW_HAVE_SRC",
+        "AW_HAVE_DRP",
+        "AW_HAVE_VBUS_ONLY",
+        "AW_HAVE_ACCMODE",
+        "AW_HAVE_EXT_MSG",
+        "AW_HAVE_VDM",
+        "AW_DEBUG_CODE",
+        "AW_HAVE_DP",
+    ],
+)
+

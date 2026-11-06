@@ -1,0 +1,7 @@
+ifdef CONFIG_OEM_TCPC_PD_AW35615
+	obj-y += aw35615/
+endif
+
+ifdef CONFIG_OEM_TCPC_PD_UPM7610
+	obj-y += upm7610/
+endif

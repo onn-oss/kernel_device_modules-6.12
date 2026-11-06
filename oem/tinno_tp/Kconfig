@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Touchscreen driver configuration (mgk_64_k612_defconfig)
+#
+config TINNO_TOUCHSCREEN_PEN
+	tristate "Focaltech Touchscreen"
+	default N
+	help
+	  Say Y here if you have Focaltech touch panel.
+	  If unsure, say N.
